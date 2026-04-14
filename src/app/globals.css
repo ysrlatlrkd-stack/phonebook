@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --ig-blue: #0095f6;
+  --ig-grey: #dbdbdb;
+  --ig-light-grey: #fafafa;
+  --ig-text-grey: #8e8e8e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #ffffff;
+    --ig-grey: #262626;
+    --ig-light-grey: #121212;
+    --ig-text-grey: #a8a8a8;
+  }
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.ig-card {
+  @apply bg-white/80 dark:bg-black/80 backdrop-blur-md border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden mb-4 shadow-sm;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ig-card:active {
+  transform: scale(0.98);
+}
+
+.bottom-nav {
+  @apply fixed bottom-0 left-0 right-0 h-[60px] bg-white/90 dark:bg-black/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 flex justify-around items-center z-[1000];
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav-item {
+  @apply flex flex-col items-center text-gray-400 dark:text-gray-500 transition-all duration-300;
+}
+
+.bottom-nav-item.active {
+  @apply text-black dark:text-white scale-110;
+}
+
+.container {
+  @apply max-w-[500px] mx-auto p-4 pb-24 min-h-screen relative;
+}
+
+/* Custom Input Style */
+input, textarea, select {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300;
+}
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Avatar Styles */
+.avatar {
+  @apply w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border border-gray-100 dark:border-gray-800 p-[2px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600;
+}
+
+.avatar-inner {
+  @apply w-full h-full rounded-full bg-white dark:bg-black flex items-center justify-center font-bold text-gray-500 dark:text-gray-300 text-lg uppercase;
+}
