@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { encrypt, decrypt } from "@/lib/crypto";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Camera, X } from "lucide-react";
 
 const categories = ["가족", "친구", "직장동료", "지인", "친척"];
 
@@ -20,7 +20,10 @@ function AddContactForm() {
     phone: "",
     category: "지인",
     memo: "",
+    avatar_url: "",
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (editId) {
@@ -39,7 +42,11 @@ function AddContactForm() {
               phone: decrypt(data.phone),
               category: data.category || "지인",
               memo: data.memo || "",
+              avatar_url: data.avatar_url || "",
             });
+            if (data.avatar_url) {
+              setImagePreview(data.avatar_url);
+            }
           }
         } catch (error) {
           console.error("Error fetching contact for edit:", error);
@@ -54,8 +61,31 @@ function AddContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
+      let finalAvatarUrl = formData.avatar_url;
+
+      // 1. Upload image if selected
+      if (imageFile) {
+        const { data: userData } = await supabase.auth.getUser();
+        if (!userData.user) throw new Error("로그인이 필요합니다.");
+
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${userData.user.id}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+        
+        finalAvatarUrl = urlData.publicUrl;
+      }
+
       const encryptedName = encrypt(formData.name);
       const encryptedPhone = encrypt(formData.phone);
 
@@ -68,6 +98,7 @@ function AddContactForm() {
             phone: encryptedPhone,
             category: formData.category,
             memo: formData.memo,
+            avatar_url: finalAvatarUrl,
           })
           .eq("id", editId);
         error = updateError;
@@ -80,6 +111,7 @@ function AddContactForm() {
               phone: encryptedPhone,
               category: formData.category,
               memo: formData.memo,
+              avatar_url: finalAvatarUrl,
             },
           ]);
         error = insertError;
@@ -116,6 +148,48 @@ function AddContactForm() {
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Avatar Upload */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="relative group">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+              {imagePreview ? (
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
+                <Camera size={32} className="text-gray-400" />
+              )}
+            </div>
+            <label className="absolute bottom-0 right-0 p-2 bg-blue-500 rounded-full text-white cursor-pointer hover:bg-blue-600 transition-colors shadow-lg">
+              <Camera size={16} />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setImageFile(file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+                }}
+              />
+            </label>
+            {imagePreview && (
+              <button
+                type="button"
+                onClick={() => {
+                  setImageFile(null);
+                  setImagePreview(null);
+                  setFormData({ ...formData, avatar_url: "" });
+                }}
+                className="absolute -top-1 -right-1 p-1 bg-red-500 rounded-full text-white hover:bg-red-600 transition-colors shadow-sm"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <p className="text-[10px] text-gray-500 mt-2 uppercase font-bold tracking-wider">사진 변경</p>
+        </div>
+
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">이름</label>
           <input

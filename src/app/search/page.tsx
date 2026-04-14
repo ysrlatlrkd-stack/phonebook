@@ -76,6 +76,7 @@ export default function SearchPage() {
               phone={contact.phone}
               category={contact.category}
               memo={contact.memo}
+              avatar_url={contact.avatar_url}
             />
           ))
         ) : searched ? (

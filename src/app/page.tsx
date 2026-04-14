@@ -88,6 +88,7 @@ export default function HomePage() {
               phone={contact.phone}
               category={contact.category}
               memo={contact.memo}
+              avatar_url={contact.avatar_url}
               onDelete={handleDelete}
             />
           ))
