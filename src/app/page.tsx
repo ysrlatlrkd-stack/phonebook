@@ -6,9 +6,10 @@ import { decrypt } from "@/lib/crypto";
 import ContactCard from "@/components/ContactCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import { Loader2 } from "lucide-react";
+import { Contact } from "@/lib/types";
 
 export default function HomePage() {
-  const [contacts, setContacts] = useState<any[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("전체");
 
@@ -29,7 +30,7 @@ export default function HomePage() {
 
       if (error) throw error;
 
-      const decryptedData = (data || []).map((item: any) => ({
+      const decryptedData = (data || []).map((item: Contact) => ({
         ...item,
         name: decrypt(item.name),
         phone: decrypt(item.phone),

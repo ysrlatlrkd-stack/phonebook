@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { encrypt, decrypt } from "@/lib/crypto";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
-import Link from "next/link";
 
 const categories = ["가족", "친구", "직장동료", "지인", "친척"];
 

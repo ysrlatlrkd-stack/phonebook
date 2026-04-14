@@ -38,8 +38,9 @@ export default function SignupPage() {
         alert("회원가입 신청이 완료되었습니다! 만약 로그인이 안 된다면 이메일 인증을 확인하거나 Supabase 설정에서 인증을 꺼주세요.");
         router.push("/login");
       }
-    } catch (err: any) {
-      setError(err.message || "회원가입 중 오류가 발생했습니다.");
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "회원가입 중 오류가 발생했습니다.";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

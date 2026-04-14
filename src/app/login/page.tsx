@@ -39,8 +39,9 @@ export default function LoginPage() {
         router.push("/");
         router.refresh();
       }
-    } catch (err: any) {
-      setError(err.message || "로그인 중 오류가 발생했습니다.");
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "로그인 중 오류가 발생했습니다.";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

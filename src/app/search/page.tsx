@@ -6,9 +6,10 @@ import { decrypt } from "@/lib/crypto";
 import ContactCard from "@/components/ContactCard";
 import SearchBar from "@/components/SearchBar";
 import { Loader2 } from "lucide-react";
+import { Contact } from "@/lib/types";
 
 export default function SearchPage() {
-  const [contacts, setContacts] = useState<any[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
@@ -33,7 +34,7 @@ export default function SearchPage() {
 
       if (error) throw error;
 
-      const decryptedData = (data || []).map((item: any) => ({
+      const decryptedData = (data || []).map((item: Contact) => ({
         ...item,
         name: decrypt(item.name),
         phone: decrypt(item.phone),
